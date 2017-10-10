@@ -3,4 +3,7 @@
 *.aux
 *.log
 *.out
-*.syntex*
+*.synctex*
+
+#jupyter
+*/.ipynb_checkpoints/*
