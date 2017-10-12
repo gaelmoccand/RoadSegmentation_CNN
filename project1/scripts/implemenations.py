@@ -70,9 +70,19 @@ def least_squares(y, tx):
 # ***************************************************
 # REGRESSION
 # ***************************************************
-def ridge_regression(y, tx, lambda ):
+def ridge_regression(y, tx, lambda_):
     """Ridge regression using normal equations"""
-    raise NotImplementedError
+	# We want to solve the linear system Ax = b
+	# A is the sum of the Gram matrix and the identidy multiplied by lambda
+    lambda_id = lambda_*np.identity(tx.shape[1])
+	gram_mat = tx.T.dot(tx)
+    A = gram_mat + lambda_id
+	
+	# b is the product between tx transposed and y
+    b = tx.T.dot(y)
+	
+	# Solve with the QR decomposition
+    return np.linalg.solve(a, b)
 
     
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
