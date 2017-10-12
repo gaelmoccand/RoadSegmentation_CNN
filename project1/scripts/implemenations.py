@@ -36,7 +36,7 @@ def gradient_descent(y, tx, initial_w, max_iters, gamma):
 		grad, error = compute_gradient(y, tx, w)
         loss = compute_mse(error)
         # Update w by gradient
-		w = w-gamma*grad
+		w = w - gamma*grad
         # store w and loss
         ws.append(w)
         losses.append(loss)
@@ -60,10 +60,13 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
 
 def least_squares(y, tx):
     """Least squares regression using normal equations"""
-	a = tx.T.dot(tx)
+	# We want to solve the linear system Aw = b...
+    # ...with A being the Gram Matrix...
+	A = tx.T.dot(tx)
+	# ... and b being the transpose of tx times y
     b = tx.T.dot(y)
 	# solve linear system using the QR decomposition
-    return np.linalg.solve(a, b)
+    return np.linalg.solve(A, b)
     
 # ***************************************************
 # REGRESSION
