@@ -5,9 +5,8 @@ import numpy as np
 # ***************************************************
 # COSTS
 # ***************************************************
-def compute_mse(y, tx, w):
-    """Calculate the loss using the mse"""
-	e = y - tx.dot(w)
+def calculate_mse(e):
+    """Calculate the mse from the input vector"""
 	N = len(e)
     mse = e.dot(e)/(2*N)
 	
