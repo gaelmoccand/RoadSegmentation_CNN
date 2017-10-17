@@ -10,6 +10,14 @@ def calculate_mse(e):
     N = len(e)
     mse = e.dot(e)/(2*N)
     return mse
+    
+def compute_loss(y, tx, w):
+    """Calculate the loss.
+
+    You can calculate the loss using mse or mae.
+    """
+    error = y - tx.dot(w)
+    return calculate_mse(error)
 
 # ***************************************************
 # GRADIENT DESCENT
