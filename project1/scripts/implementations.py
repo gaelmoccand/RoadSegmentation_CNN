@@ -82,7 +82,7 @@ def ridge_regression(y, tx, lambda_):
 	"""Ridge regression using normal equations"""
 	# We want to solve the linear system Ax = b
 	# A is the sum of the Gram matrix and the identidy multiplied by lambda
-	lambda_id = lambda_*np.identity(tx.shape[1])
+	lambda_id = tx.shape[0]*lambda_*np.identity(tx.shape[1])
 	gram_mat = tx.T.dot(tx)
 	A = gram_mat + lambda_id
 	
