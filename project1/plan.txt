@@ -1,0 +1,10 @@
+Test ridge
+
+Proprocessing (remove -999) -> read all, average without -999 and replace them by mean
+
+Ridge with different lambda
+Polynomial from 1 to 7
+=> on 1/4 of the train set and get best value of lambda and polynomial
+
+On the rest we get the w, binarize it and find if good prediction
+
