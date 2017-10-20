@@ -72,3 +72,25 @@ def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
         end_index = min((batch_num + 1) * batch_size, data_size)
         if start_index != end_index:
             yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
+
+
+def split_data(x, y, ratio, seed=1):
+	"""
+	split the dataset based on the split ratio. If ratio is 0.8 
+	you will have 80% of your data set dedicated to training 
+	and the rest dedicated to testing
+	"""
+	# set seed
+	np.random.seed(seed)
+	# Sizes of different sets
+	data_size = len(y)
+	training_size = np.round(ratio*data_size)
+	# Randomly permute a sequence
+	idx = np.random.permutation(data_size)
+	# Split the data according to ratio
+	x_train = x[idx[:training_size]]
+	y_train =  y[idx[:training_size]]
+	x_test = x[idx[training_size:]]
+	y_test = y [idx[training_size:]]
+
+	return x_train, y_train, x_test, y_test
