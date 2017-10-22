@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Useful methods for project 1"""
 import numpy as np
+from helpers import batch_iter # for the batch_iter CHECK if need to copy PAST down here
 
 # ***************************************************
 # COSTS
