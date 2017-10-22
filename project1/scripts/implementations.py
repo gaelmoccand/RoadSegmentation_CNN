@@ -8,7 +8,7 @@ import numpy as np
 def calculate_mse(e):
     """Calculate the mse from the input vector"""
     N = len(e)
-    mse = e.dot(e)/(2*N)
+    mse = e.T.dot(e)/(2*N)
     return mse
     
 def compute_loss(y, tx, w):
