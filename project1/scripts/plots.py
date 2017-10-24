@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def cross_validation_visualization(lambds, mse_tr, mse_te):
+def cross_validation_visualization(lambds, mse_tr, mse_te,degree):
     """visualization the curves of mse_tr and mse_te."""
     plt.semilogx(lambds, mse_tr, marker=".", color='b', label='train error')
     plt.semilogx(lambds, mse_te, marker=".", color='r', label='test error')
@@ -50,7 +50,7 @@ def bias_variance_decomposition_visualization(degrees, rmse_tr, rmse_te):
         linestyle="-",
         label='test',
         linewidth=3)
-    plt.ylim(0.2, 0.7)
+    plt.ylim(0.1, 1.9)
     plt.xlabel("degree")
     plt.ylabel("error")
     plt.title("Bias-Variance Decomposition")
