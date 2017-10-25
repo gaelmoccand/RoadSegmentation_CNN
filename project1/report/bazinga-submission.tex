@@ -1,0 +1,118 @@
+\documentclass[10pt,conference,compsocconf]{IEEEtran}
+
+\usepackage{hyperref}
+\usepackage{graphicx}	% For figure environment
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Some tools
+% Includes a figure
+% The first parameter is the label, which is also the name of the figure
+%   with or without the extension (e.g., .eps, .fig, .png, .gif, etc.)
+%   IF NO EXTENSION IS GIVEN, LaTeX will look for the most appropriate one.
+%   This means that if a DVI (or PS) is being produced, it will look for
+%   an eps. If a PDF is being produced, it will look for nearly anything
+%   else (gif, jpg, png, et cetera). Because of this, when I generate figures
+%   I typically generate an eps and a png to allow me the most flexibility
+%   when rendering my document.
+% The second parameter is the width of the figure normalized to column width
+%   (e.g. 0.5 for half a column, 0.75 for 75% of the column)
+% The third parameter is the caption.
+\newcommand{\scalefig}[4]{
+  \begin{figure}[ht!]
+    % Requires \usepackage{graphicx}
+    \centering
+    \includegraphics[width=#2\columnwidth]{../pics/#1}
+ \caption{#3}
+    \label{#4}
+  \end{figure}}
+  
+  \newcommand{\doublefig}[5]{
+  \begin{figure}[ht!]
+    % Requires \usepackage{graphicx}
+    \centering
+    \includegraphics[width=#3\columnwidth]{../pics/#1}\hfill
+    \includegraphics[width=#3\columnwidth]{../pics/#2}
+ \caption{#4}
+    \label{#5}
+  \end{figure}}
+
+% \mathbf
+\newcommand{\m}[1]{\mathbf{#1}}
+% argmin
+\newcommand{\argmin}[1]{\underset{#1}{\operatorname{argmin}}}
+\newcommand{\argmax}[1]{\underset{#1}{\operatorname{argmax}}}
+\newcommand{\mmin}[1]{\underset{#1}{\operatorname{min}}}
+\newcommand{\mmax}[1]{\underset{#1}{\operatorname{max}}}
+
+
+\begin{document}
+\title{Project 1: Higgs Boson}
+
+\author{
+  Gaël Moccand, Pascal Bienz\\
+  \textit{Machine Learning Course, EPFL}
+}
+
+\maketitle
+
+\begin{abstract}
+The abstract should really be written last, along with the title of
+the paper. The four points that should be covered:
+\begin{enumerate}
+\item State the problem.
+\item Say why it is an interesting problem.
+\item Say what your solution achieves.
+\item Say what follows from your solution.
+\end{enumerate}
+\end{abstract}
+
+\section{Introduction}
+The Higgs boson is an elementary particle discovered at the Large Hadron Collider at CERN in 2013. In order to produce it, physicists accelerate protons and make them collide at high speeds. The collision rarely generates a Higgs boson. A major problem that arises when scientists want to observe the particle is that its life is very short. Indeed, a Higgs boson quickly decays into other particles. For this reason, it is observed indirectly by looking at the outputs of its decay. However, this process can become tricky because a Higgs boson's decay signature can be very much alike another particle's signature. In this paper, a machine learning method that efficiently estimates the likelihood that a given measurement is due to a Higgs boson or some other particles is presented... ADD SOME DETAILS ABOUT THE METHOD HERE.
+
+\section{Methodology}
+
+\section{Results}
+
+\section{Discussion}
+
+\section{Summary}
+
+%
+%\begin{figure}[tbp]
+%  \centering
+%  \includegraphics[width=\columnwidth]{denoised_signal_1d}
+%  \caption{Signal compression and denoising using the Fourier basis.}
+%  \vspace{-3mm}
+%  \label{fig:denoise-fourier}
+%\end{figure}
+%\begin{figure}[htbp]
+%  \centering
+%  \includegraphics[width=\columnwidth]{local_wdenoised_1d}
+%  \vspace{-3mm}
+%  \caption{Signal compression and denoising using the Daubechies wavelet basis.}
+%  \label{fig:denoise-wavelet}
+%\end{figure}
+
+
+%\begin{table*}[htbp]
+%  \centering
+%  \begin{tabular}[c]{|l||l|l|l|}
+%    \hline
+%    Basis&Support&Suitable signals&Unsuitable signals\\
+%    \hline
+%    Fourier&global&sine like&localized\\
+%    wavelet&local&localized&sine like\\
+%    \hline
+%  \end{tabular}
+%  \caption{Characteristics of Fourier and wavelet basis.}
+%  \label{tab:fourier-wavelet}
+%\end{table*}
+
+%\section*{Acknowledgements}
+%The author thanks Christian Sigg for his careful reading and helpful
+%suggestions.
+
+\bibliographystyle{IEEEtran}
+\bibliography{literature}
+
+\end{document}
