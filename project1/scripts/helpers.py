@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """some helper functions."""
 import numpy as np
+import numpy.ma as ma
+
 
 
 def load_data(sub_sample=True, add_outlier=False):
@@ -30,11 +32,31 @@ def load_data(sub_sample=True, add_outlier=False):
     return height, weight, gender
 
 
+def sample_data(y, x, seed, size_samples):
+    """sample from dataset."""
+    np.random.seed(seed)
+    num_observations = y.shape[0]
+    random_permuted_indices = np.random.permutation(num_observations)
+    y = y[random_permuted_indices]
+    x = x[random_permuted_indices]
+    return y[:size_samples], x[:size_samples]
+
+
 def standardize(x):
     """Standardize the original data set."""
-    mean_x = np.mean(x)
+    mean_x = np.mean(x, axis=0)
     x = x - mean_x
-    std_x = np.std(x)
+    std_x = np.std(x, axis=0)
+    x = x / std_x
+    return x, mean_x, std_x
+
+def standardizeNan(x):
+    """Standardize the original data set."""
+    x[np.where(x == -999)] = np.nan
+    x=np.where(np.isnan(x),ma.array(x,mask=np.isnan(x)).mean(axis=0),x)
+    mean_x = np.nanmean(x,axis=0)
+    x = x - mean_x
+    std_x = np.nanstd(x,axis=0)
     x = x / std_x
     return x, mean_x, std_x
 
@@ -88,9 +110,9 @@ def split_data(x, y, ratio, seed=1):
 	# Randomly permute a sequence
 	idx = np.random.permutation(data_size)
 	# Split the data according to ratio
-	x_train = x[idx[:training_size]]
-	y_train =  y[idx[:training_size]]
-	x_test = x[idx[training_size:]]
-	y_test = y [idx[training_size:]]
-
+	x_train = x[idx[:int(training_size)]]
+	y_train =  y[idx[:int(training_size)]]
+	x_test = x[idx[int(training_size):]]
+	y_test = y [idx[int(training_size):]]
+    
 	return x_train, y_train, x_test, y_test
