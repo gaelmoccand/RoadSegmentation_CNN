@@ -54,7 +54,7 @@ def gradient_descent(y, tx, initial_w, max_iters, gamma):
 
 # ***************************************************
 # LEAST SQUARES
-# ***************************************************	
+# ***************************************************    
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Linear regression using gradient descent"""
     raise NotImplementedError
@@ -84,7 +84,7 @@ def least_squares(y, tx):
     # ...with A being the Gram Matrix...
     A = tx.T.dot(tx)
     # ... and b being the transpose of tx times y    """Least squares regression using normal equations"""
-	
+    
     b = tx.T.dot(y)
     # solve linear system using the QR decomposition
     return np.linalg.solve(A, b)
@@ -93,23 +93,45 @@ def least_squares(y, tx):
 # REGRESSION
 # ***************************************************
 def ridge_regression(y, tx, lambda_):
-	"""Ridge regression using normal equations"""
-	# We want to solve the linear system Ax = b
-	# A is the sum of the Gram matrix and the identidy multiplied by lambda
-	lambda_id = tx.shape[0]*lambda_*np.identity(tx.shape[1])
-	gram_mat = tx.T.dot(tx)
-	A = gram_mat + lambda_id
-	
-	# b is the product between tx transposed and y
-	b = tx.T.dot(y)
-	
-	# Solve with the QR decomposition
-	return np.linalg.solve(A, b)
+    """Ridge regression using normal equations"""
+    # We want to solve the linear system Ax = b
+    # A is the sum of the Gram matrix and the identidy multiplied by lambda
+    lambda_id = tx.shape[0]*lambda_*np.identity(tx.shape[1])
+    gram_mat = tx.T.dot(tx)
+    A = gram_mat + lambda_id
+    
+    # b is the product between tx transposed and y
+    b = tx.T.dot(y)
+    
+    # Solve with the QR decomposition
+    return np.linalg.solve(A, b)
 
     
 def logistic_regression(y, tx, initial_w, max_iters, gamma):
-    """Logistic regression using gradient descent or SGD"""
-    raise NotImplementedError
+    """Logistic regression using gradient descent"""
+    # Define parameters to store w and loss
+    ws = [initial_w]
+    losses = []
+    w = initial_w
+    for n_iter in range(max_iters):
+        # compute the sigmoid function
+        Xw = tx.dot(w);
+        sigma = np.exp(Xw)/(1 + np.exp(Xw));
+        # then the loss
+        tmp = -y.T.dot(np.log(sigma)) + (y-1).T.dot(np.log(1 - sigma));
+        # this returns an element of size (1,1) -> reshape
+        loss = np.squeeze(tmp);
+        # Compute the gradient of the loss w.r.t w
+        grad = tx.T.dot(sigma-y);
+        # Update w by gradient
+        w = w - gamma*grad
+        # store w and loss
+        ws.append(w)
+        losses.append(loss)
+        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
+              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+
+    return losses, ws
 
 
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
