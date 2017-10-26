@@ -114,17 +114,15 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
     losses = []
     w = initial_w
     for n_iter in range(max_iters):
-        # compute the sigmoid function
+        # Compute the loss. First start with the sigmoid
         Xw = tx.dot(w);
         sigma = np.exp(Xw)/(1 + np.exp(Xw));
-        # then the loss
-        tmp = -y.T.dot(np.log(sigma)) + (y-1).T.dot(np.log(1 - sigma));
-        # this returns an element of size (1,1) -> reshape
+        tmp = -y.T.dot(np.log(sigma)) + (y-1).T.dot(np.log(1 - sigma)); # this returns an element of size (1,1) -> reshape
         loss = np.squeeze(tmp);
         # Compute the gradient of the loss w.r.t w
         grad = tx.T.dot(sigma-y);
         # Update w by gradient
-        w = w - gamma*grad
+        w -= gamma*grad
         # store w and loss
         ws.append(w)
         losses.append(loss)
@@ -132,8 +130,27 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma):
               bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
 
     return losses, ws
-
-
+    
 def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
-    """Regularized logistic regression using gradient descent or SGD"""    
-    raise NotImplementedError
+    """Regularized logistic regression using gradient descent"""    
+    # Define parameters to store w and loss
+    ws = [initial_w]
+    losses = []
+    w = initial_w
+    for n_iter in range(max_iters):
+        # Compute the loss. First start with the sigmoid
+        Xw = tx.dot(w);
+        sigma = np.exp(Xw)/(1 + np.exp(Xw));
+        tmp = -y.T.dot(np.log(sigma)) + (y-1).T.dot(np.log(1 - sigma)) + lambda_*(w.T.dot(w))/2.0; # this returns an element of size (1,1) -> reshape
+        loss = np.squeeze(tmp);
+        # Compute the gradient of the loss w.r.t w
+        grad = tx.T.dot(sigma-y) + lambda_*w;
+        # Update w by gradient
+        w -= gamma*grad
+        # store w and loss
+        ws.append(w)
+        losses.append(loss)
+        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
+              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+
+    return losses, ws
