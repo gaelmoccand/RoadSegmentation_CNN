@@ -14,6 +14,19 @@ def cross_validation_visualization(lambds, mse_tr, mse_te,degree):
     plt.legend(loc=2)
     plt.grid(True)
     plt.savefig("cross_validation")
+    
+def cross_validation_visualization_poly(poly, mse_tr, mse_te,degree):
+    """visualization the curves of mse_tr and mse_te."""
+    plt.plot(poly, mse_tr, marker=".", color='b', label='train error')
+    plt.plot(poly, mse_te, marker=".", color='r', label='test error')
+    plt.xlabel("poly")
+    plt.ylabel("rmse")
+    plt.title("cross validation")
+    plt.legend(loc=2)
+    plt.grid(True)
+    plt.savefig("cross_validation")
+    plt.xlim(2, 9)
+
 
 
 def bias_variance_decomposition_visualization(degrees, rmse_tr, rmse_te):
