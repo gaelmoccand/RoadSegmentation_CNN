@@ -2,11 +2,11 @@
 """implement a polynomial basis function."""
 
 import numpy as np
+    
 
-
-def build_poly(x, degree):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
-    poly = np.ones((len(x), 1))
-    for deg in range(1, degree+1):
-        poly = np.c_[poly, np.power(x, deg)]
-    return poly
+def build_poly(x, deg):
+    """polynomial basis functions."""
+    mat = np.ones((len(x), deg+1))
+    for d in range(1, deg+1):
+        mat[:,d] = x**d;
+    return mat
