@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """Useful methods for project 1"""
 import numpy as np
-from helpers import batch_iter # for the batch_iter CHECK if need to copy PAST down here
 
 # ***************************************************
 # COSTS
@@ -13,10 +12,7 @@ def calculate_mse(e):
     return mse
     
 def compute_loss(y, tx, w):
-    """Calculate the loss.
-
-    You can calculate the loss using mse or mae.
-    """
+    """Calculate the loss using mse"""
     error = y - tx.dot(w)
     return calculate_mse(error)
 
@@ -31,51 +27,33 @@ def compute_gradient(y, tx, w):
     
     return grad, error
 
-
-def gradient_descent(y, tx, initial_w, max_iters, gamma):
-    """Gradient descent algorithm."""
-    # Define parameters to store w and loss
-    ws = [initial_w]
-    losses = []
-    w = initial_w
-    for n_iter in range(max_iters):
-        # Compute gradient and loss
-        grad, error = compute_gradient(y, tx, w)
-        loss = compute_mse(error)
-        # Update w by gradient
-        w = w - gamma*grad
-        # store w and loss
-        ws.append(w)
-        losses.append(loss)
-        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
-
-    return losses, ws
-
 # ***************************************************
 # LEAST SQUARES
 # ***************************************************    
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Linear regression using gradient descent"""
-    raise NotImplementedError
-    
+    ws = [initial_w]
+    w = initial_w
+    for n_iter in range(max_iters):
+        grad,_ = compute_gradient(y,tx,w)
+        w = w - (gamma)*grad
+        #print("GD ({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
+              #bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))    
+    loss = compute_loss(y,tx,w)
+    return w,loss
+
 
 def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     """Linear regression using stochastic gradient descent"""
-    # Define parameters to store w and loss
-    ws = [initial_w]
-    losses = []
     w = initial_w
     for n_iter in range(max_iters):
         for minibatch_y, minibatch_tx in batch_iter(y, tx, 1): # set batch size to 128
             grad,_=compute_gradient(minibatch_y,minibatch_tx,w) # compute the stochastic gradient using the minibatches
             w = w - (gamma)*grad # update the w
-            loss = compute_loss(y,tx,w)# compute the loss using the entire sets
-            ws.append(w)#save w
-            losses.append(loss) #save the loss
-        print("Stochastic Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))    
-    return losses, ws
+            #print("SGD ({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
+             # bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))   
+    loss = compute_loss(y,tx,w)# compute the loss using the entire sets
+    return w,loss
     
 
 def least_squares(y, tx):
@@ -87,10 +65,12 @@ def least_squares(y, tx):
     
     b = tx.T.dot(y)
     # solve linear system using the QR decomposition
-    return np.linalg.solve(A, b)
+    w=np.linalg.solve(A, b)
+    loss = compute_loss(y,tx,w)# compute the loss using the entire sets
+    return w,loss
     
 # ***************************************************
-# REGRESSION
+# REGRESSION RIDGE + Logistics
 # ***************************************************
 def ridge_regression(y, tx, lambda_):
     """Ridge regression using normal equations"""
@@ -104,53 +84,72 @@ def ridge_regression(y, tx, lambda_):
     b = tx.T.dot(y)
     
     # Solve with the QR decomposition
-    return np.linalg.solve(A, b)
-
+    w=np.linalg.solve(A, b)
+    loss = compute_loss(y,tx,w)# compute the loss using the entire sets
+    return w,loss
     
-def logistic_regression(y, tx, initial_w, max_iters, gamma):
+def logistic_regression(y, tx, initial_w, max_iters, gamma): #FIXME diverge
     """Logistic regression using gradient descent"""
-    # Define parameters to store w and loss
-    ws = [initial_w]
     losses = []
     w = initial_w
     for n_iter in range(max_iters):
-        # Compute the loss. First start with the sigmoid
         Xw = tx.dot(w);
         sigma = np.exp(Xw)/(1 + np.exp(Xw));
-        tmp = -y.T.dot(np.log(sigma)) + (y-1).T.dot(np.log(1 - sigma)); # this returns an element of size (1,1) -> reshape
-        loss = np.squeeze(tmp);
         # Compute the gradient of the loss w.r.t w
-        grad = tx.T.dot(sigma-y);
+        grad = tx.T.dot(sigma - y)
         # Update w by gradient
-        w -= gamma*grad
-        # store w and loss
-        ws.append(w)
-        losses.append(loss)
-        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+        w = w - (gamma)*grad # update the w
+        #print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
+              #bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]
+    loss = compute_loss(y,tx,w)# compute the loss using the entire sets
+    return w,loss  
 
-    return losses, ws
-    
-def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma):
+def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma): #FIXME diverge
     """Regularized logistic regression using gradient descent"""    
     # Define parameters to store w and loss
     ws = [initial_w]
     losses = []
     w = initial_w
     for n_iter in range(max_iters):
-        # Compute the loss. First start with the sigmoid
-        Xw = tx.dot(w);
-        sigma = np.exp(Xw)/(1 + np.exp(Xw));
-        tmp = -y.T.dot(np.log(sigma)) + (y-1).T.dot(np.log(1 - sigma)) + lambda_*(w.T.dot(w))/2.0; # this returns an element of size (1,1) -> reshape
-        loss = np.squeeze(tmp);
+        Xw = tx.dot(w)/1000;
+        sigma = np.exp(Xw)/(1 + np.exp(Xw))
+        print(Xw)
         # Compute the gradient of the loss w.r.t w
-        grad = tx.T.dot(sigma-y) + lambda_*w;
+        grad = tx.T.dot(sigma - y) + lambda_*w
         # Update w by gradient
-        w -= gamma*grad
-        # store w and loss
-        ws.append(w)
-        losses.append(loss)
-        print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
-              bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))
+        w = w - (gamma)*grad # update the w
+        #print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
+              #bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]
+    loss = compute_loss(y,tx,w)# compute the loss using the entire sets
+    return w,loss
 
-    return losses, ws
+
+    
+# ***************************************************
+# ffrom Helpers
+# ***************************************************
+
+def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
+    """
+    Generate a minibatch iterator for a dataset.
+    Takes as input two iterables (here the output desired values 'y' and the input data 'tx')
+    Outputs an iterator which gives mini-batches of `batch_size` matching elements from `y` and `tx`.
+    Data can be randomly shuffled to avoid ordering in the original data messing with the randomness of the minibatches.
+    Example of use :
+    for minibatch_y, minibatch_tx in batch_iter(y, tx, 32):
+        <DO-SOMETHING>
+    """
+    data_size = len(y)
+
+    if shuffle:
+        shuffle_indices = np.random.permutation(np.arange(data_size))
+        shuffled_y = y[shuffle_indices]
+        shuffled_tx = tx[shuffle_indices]
+    else:
+        shuffled_y = y
+        shuffled_tx = tx
+    for batch_num in range(num_batches):
+        start_index = batch_num * batch_size
+        end_index = min((batch_num + 1) * batch_size, data_size)
+        if start_index != end_index:
+            yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
