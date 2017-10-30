@@ -24,7 +24,6 @@ def compute_gradient(y, tx, w):
     error = y - tx.dot(w)
     N = len(error)
     grad = -tx.T.dot(error)/N
-    
     return grad, error
 
 # ***************************************************
@@ -35,7 +34,7 @@ def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     w = initial_w
     for n_iter in range(max_iters):
         grad,_ = compute_gradient(y,tx,w)
-        w = w - (gamma)*grad
+        w = w - gamma*grad
         #print("GD ({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
               #bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))    
     loss = compute_loss(y,tx,w)
@@ -48,7 +47,7 @@ def least_squares_SGD(y, tx, initial_w, max_iters, gamma):
     for n_iter in range(max_iters):
         for minibatch_y, minibatch_tx in batch_iter(y, tx, 1): # set batch size to 128
             grad,_=compute_gradient(minibatch_y,minibatch_tx,w) # compute the stochastic gradient using the minibatches
-            w = w - (gamma)*grad # update the w
+            w = w - gamma*grad # update the w
             #print("SGD ({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
              # bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]))   
     loss = compute_loss(y,tx,w)# compute the loss using the entire sets
@@ -60,8 +59,7 @@ def least_squares(y, tx):
     # We want to solve the linear system Aw = b...
     # ...with A being the Gram Matrix...
     A = tx.T.dot(tx)
-    # ... and b being the transpose of tx times y    """Least squares regression using normal equations"""
-    
+    # ... and b being the transpose of tx times y
     b = tx.T.dot(y)
     # solve linear system using the QR decomposition
     w=np.linalg.solve(A, b)
@@ -78,10 +76,8 @@ def ridge_regression(y, tx, lambda_):
     lambda_id = tx.shape[0]*lambda_*np.identity(tx.shape[1])
     gram_mat = tx.T.dot(tx)
     A = gram_mat + lambda_id
-    
     # b is the product between tx transposed and y
     b = tx.T.dot(y)
-    
     # Solve with the QR decomposition
     w=np.linalg.solve(A, b)
     loss = compute_loss(y,tx,w)# compute the loss using the entire sets
@@ -97,7 +93,7 @@ def logistic_regression(y, tx, initial_w, max_iters, gamma): #FIXME diverge
         # Compute the gradient of the loss w.r.t w
         grad = tx.T.dot(sigma - y)
         # Update w by gradient
-        w = w - (gamma)*grad # update the w
+        w = w - gamma*grad # update the w
         #print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
               #bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]
     loss = compute_loss(y,tx,w)# compute the loss using the entire sets
@@ -116,7 +112,7 @@ def reg_logistic_regression(y, tx, lambda_, initial_w, max_iters, gamma): #FIXME
         # Compute the gradient of the loss w.r.t w
         grad = tx.T.dot(sigma - y) + lambda_*w
         # Update w by gradient
-        w = w - (gamma)*grad # update the w
+        w = w - gamma*grad # update the w
         #print("Gradient Descent({bi}/{ti}): loss={l}, w0={w0}, w1={w1}".format(
               #bi=n_iter, ti=max_iters - 1, l=loss, w0=w[0], w1=w[1]
     loss = compute_loss(y,tx,w)# compute the loss using the entire sets

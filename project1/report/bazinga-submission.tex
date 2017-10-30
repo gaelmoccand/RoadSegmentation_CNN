@@ -21,7 +21,7 @@
   \begin{figure}[ht!]
     % Requires \usepackage{graphicx}
     \centering
-    \includegraphics[width=#2\columnwidth]{../pics/#1}
+    \includegraphics[width=#2\columnwidth]{pics/#1}
  \caption{#3}
     \label{#4}
   \end{figure}}
@@ -83,9 +83,10 @@ the paper. The four points that should be covered:
 \section{Introduction}
 The Higgs boson is an elementary particle discovered at the Large Hadron Collider at CERN in 2013. In order to produce it, physicists accelerate protons and make them collide at high speeds. In some rare cases, the collision generates a Higgs boson. A major problem that arises when scientists want to observe the particle is that its life is very short. Indeed, a Higgs boson quickly decays into other particles. For that reason, it is observed indirectly by looking at the outputs of the decay. However, this process can become tricky because a Higgs boson's decay signature can be very much alike another particle's signature.\\
 In this paper, a machine learning method that efficiently estimates the likelihood that a given measurement is due to a Higgs boson or some other particles is presented... ADD SOME DETAILS ABOUT THE METHOD HERE.\\
-Two specific data sets are used to optimize the method. The first set $S_{t}$ is called the training set and contains $N=250000$ observations. It is used to develop the model. The second set $S_{v}$ is the validation set and has 568238 events. These data are used to validate the model and make sure that we the model does not overfit the data of $S_t$. In both sets, the events are characterized by 30 features. Among them, 13 are "raw" quantities about the bunch collision as measured by the detector and 17 are quantities computed from the raw features, which were selected by the physicists. Finally, let's point out that in some cases the variables of some entries are not available. In order to handle the missing data, it is primordial to apply a preprocessing stage.
+Two specific data sets are used to optimize the method. The first set $S_{t}$ is called the training set and contains $N=250000$ observations. It is used to develop the model. The second set $S_{v}$ is the validation set and has 568238 events. These data are used to validate the model and make sure that we the model does not overfit the data of $S_t$. In both sets, the events are characterized by 30 features. Among them, 13 are "raw" quantities about the bunch collision as measured by the detector and 17 are "derived" quantities computed from the raw features, which were selected by the physicists. Finally, let's point out that in some cases the variables of some entries are not available. In order to handle the missing data, it is primordial to apply a preprocessing stage.
 
 \section{Methodology}
+Before digging into prediction methods, it is beneficial to handle the data. The preprocessing is key and impacts the prediction. For instance, a scatter plot matrix of each features can be useful to select or drop some features. In our case, a basic standardization by subtracting the mean and dividing by the standard deviation has been applied to the input data. Furthermore, the missing value have been replaced by the mean of the corresponding feature, which is better than a value which has no signification.\\
 To predict the nature of the measurement, we need to find a function that best approximates the output $\yy$ with the given inputs $\xx$
 $$
 y_n \approx f(\mathbf{x_n}) \ \forall n.
@@ -103,7 +104,7 @@ As a starting point, it has been decided to chose a simple least squares regress
 $$
 \ww^* = (\XX^T\XX)^{-1}\XX^T\yy
 $$
-which leads to a prediction for an unseen datapoint $\xx_m$ given by
+which leads to a prediction for an unseen data point $\xx_m$ given by
 $$
 \hat{y}_m := \xx_m^T\ww^*=\xx_m^T(\XX^T\XX)^{-1}\XX^T\yy,
 $$
@@ -116,6 +117,12 @@ We then fit a linear model to the extended feature vector $\phi(\xx_n)$:
 $$
 y_n \approx \phi(\xx_n)^T\ww.
 $$
+Unfortunately, this tuning has a negative effect: overfitting. Regularization is a
+way to mitigate this undesirable behavior by penalizing the model with a parameter $\Omega(\ww)$. The optimization problem becomes
+$$
+\argmin{\ww} \Lagr(\ww) + \Omega(\ww).
+$$ 
+The Ridge regularization $\Omega(\ww) = \lambda || \ww ||_2^2$ is a natural choice. It penalizes the large model weights $w_i$.
 
 %As it can be seen on the figure cross_validation_least_poly, it is ovious than the smalest error is obtained by chosing a degree of 2 for the least square. However not every polynomial basis could be used because
 %some basis leads to a unsolvable solution, that's the reason why some degree point are missing on the figure.
@@ -125,10 +132,18 @@ $$
 
 
 \section{Results}
-In order to measure the quality of a method, the predictions obtained are sent to the predictive modelling competitions platform \textit{Kaggle} which returns a score between 0 and 1.\\
+In order to measure the quality of a method, the predictions obtained are sent to the predictive modelling competitions platform \textit{Kaggle} which returns a score between 0 and 1. \\
+As a baseline, a simple least squares together with a polynomial basis with different degrees has been used. As it can be seen on Fig.\ref{fig:cross_validation_least_poly}, it is obvious that the smallest error is obtained by choosing a degree of. However not every polynomial basis could be used because some basis lead to a unsolvable solution, that's the reason why some degree point are missing on the figure.
+\scalefig{cross_validation_least_poly}{1}{MSE w.r.t polynomial degree for direct least squares method}{fig:cross_validation_least_poly}
+
+It seems that selecting raw or the derived features only gives a lower score than taking into consideration both types, even if there is information redundancy by taking both types. 
+Moreover, there is a feature which only has integer numbers. A possible improvement would be not to feed it to the polynomial basis and use this feature directly. Unfortunately, this trick has not shown much improvement on the final score.
+
+
 \section{Discussion}
-MSE is not a good cost function
-when outliers are present.
+MSE is not a good cost function when outliers are present.
+
+Another improvement would be also to weight the features independently because fot the moment each feature are equally weighted. 
 \section{Summary}
 
 %
