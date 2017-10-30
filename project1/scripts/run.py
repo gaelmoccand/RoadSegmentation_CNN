@@ -19,7 +19,7 @@ def submission(train_data_path,test_data_path):
     tx_tst,y_tst = preprocessing(x_data_test,y_data_test)
     tx_tst_p = build_poly(tx_tst, polyN) # use polynomial basis
     y_prime = predict_labels(w,tx_tst_p)#use the w found with the ridge regression
-    create_csv_submission(ind, y_prime, 'data/sample-submission.csv')
+    create_csv_submission(ind, y_prime, 'sample-submission.csv')
 
 
 def preprocessing(x_data,y_data):
@@ -47,7 +47,7 @@ def build_poly(x, degs):
     """polynomial basis functions."""
     poly = np.ones((len(x), 1))
     for deg in range(1, degs+1):
-        poly = np.c_[poly, x**d]
+        poly = np.c_[poly, x**deg]
     return poly
 
 
