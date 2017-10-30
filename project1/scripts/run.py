@@ -13,6 +13,7 @@ def submission(train_data_path,test_data_path):
     polyN=6
     tx_tr = build_poly(tx, polyN) # use polynomial basis
     w,loss = ridge_regression(y, tx_tr, 0.0001) #use the ridge regression to compute the w  
+    
     # Now using the test set
     y_data_test,x_data_test,ind=load_csv_data(test_data_path)
     tx_tst,y_tst = preprocessing(x_data_test,y_data_test)
@@ -42,17 +43,11 @@ def standardizeNan(x):
     x = x / std_x
     return x, mean_x, std_x
 
-def build_poly(x, degree):
-    """polynomial basis functions for input data x, for j=0 up to j=degree."""
+def build_poly(x, degs):
+    """polynomial basis functions."""
     poly = np.ones((len(x), 1))
-    for deg in range(1, degree+1):
-        poly = np.c_[poly, np.power(x, deg)]
+    for deg in range(1, degs+1):
+        poly = np.c_[poly, x**d]
     return poly
 
-#def build_poly(x, deg):
- #   """polynomial basis functions."""
-  #  mat = np.ones((len(x), 1))
-   # for d in range(1, deg+1):
-       # mat[:,d] = x**d;
-    #return mat
 
