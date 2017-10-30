@@ -2,7 +2,7 @@
 
 \usepackage{hyperref}
 \usepackage{graphicx}	% For figure environment
-
+\usepackage{amsmath}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Some tools
 % Includes a figure
@@ -42,6 +42,10 @@
 \newcommand{\xt}{\mathbf{x}^T}
 \newcommand{\yy}{\mathbf{y}}
 \newcommand{\ww}{\mathbf{w}}
+\newcommand{\XX}{\mathbf{X}}
+ 
+\newcommand{\Lagr}{\mathcal{L}}
+\newcommand{\Lmse}{\Lagr_{MSE}}
 
 % argmin
 \newcommand{\argmin}[1]{\underset{#1}{\operatorname{argmin}}}
@@ -58,7 +62,8 @@
 \title{Project 1: Higgs Boson}
 
 \author{
-  Gaël Moccand, Pascal Bienz\\
+  Gael Moccand, Pascal Bienz\\
+  gael.moccand@gmail.com, pascal.bienz@gmail.com\\
   \textit{Machine Learning Course, EPFL}
 }
 
@@ -78,45 +83,52 @@ the paper. The four points that should be covered:
 \section{Introduction}
 The Higgs boson is an elementary particle discovered at the Large Hadron Collider at CERN in 2013. In order to produce it, physicists accelerate protons and make them collide at high speeds. In some rare cases, the collision generates a Higgs boson. A major problem that arises when scientists want to observe the particle is that its life is very short. Indeed, a Higgs boson quickly decays into other particles. For that reason, it is observed indirectly by looking at the outputs of the decay. However, this process can become tricky because a Higgs boson's decay signature can be very much alike another particle's signature.\\
 In this paper, a machine learning method that efficiently estimates the likelihood that a given measurement is due to a Higgs boson or some other particles is presented... ADD SOME DETAILS ABOUT THE METHOD HERE.\\
-Two specific data sets are used to optimize the method. The first set $S_{t}$ is called the training set and contains 250000 observations. It is used to develop the model. The second set $S_{v}$ is the validation set and has 568238 events. These data are used to validate the model and make sure that we the model does not overfit the data of $S_t$. In both sets, the events are characterized by 30 features. Among them, 13 are "raw" quantities about the bunch collision as measured by the detector and 17 are quantities computed from the raw features, which were selected by the physicists. Finally, let's point out that in some cases the variables of some entries are not available. In order to handle the missing data, it is primordial to apply a preprocessing stage.
+Two specific data sets are used to optimize the method. The first set $S_{t}$ is called the training set and contains $N=250000$ observations. It is used to develop the model. The second set $S_{v}$ is the validation set and has 568238 events. These data are used to validate the model and make sure that we the model does not overfit the data of $S_t$. In both sets, the events are characterized by 30 features. Among them, 13 are "raw" quantities about the bunch collision as measured by the detector and 17 are quantities computed from the raw features, which were selected by the physicists. Finally, let's point out that in some cases the variables of some entries are not available. In order to handle the missing data, it is primordial to apply a preprocessing stage.
 
 \section{Methodology}
 To predict the nature of the measurement, we need to find a function that best approximates the output $\yy$ with the given inputs $\xx$
-\begin{equation}
+$$
 y_n \approx f(\mathbf{x_n}) \ \forall n.
-\end{equation}
+$$
 A common choice is to use a linear regression, i.e.
-\begin{equation}
-f(\mathbf{x_n}) = w_0 +   (w_1 \ldots w_D) \xx_n =: \tilde{\xx}_n^T \ww
-\end{equation}
+$$
+f(\mathbf{x_n}) = w_0 +  \xx_n^T\begin{pmatrix} w_1 \\ \vdots\\ w_D \end{pmatrix} =: \tilde{\xx}_n^T \ww
+$$
 where $\ww = (w_0 \ldots w_D)$ are the parameters of the models. Note that we add a tilde over the input vector to indicate that it contains an offset term.\\
-%As a starting point, it has been decided to chose a simple least squares regression  to compute directly the w vector together with different degree polynomial basis.
+A cost function is needed to estimate how well the model does. Again, a common choice is to use the Mean Square Error (MSE):
+$$
+\Lmse(\ww) := \frac 1N \sum_{n=1}^N \left( y_n -f(\xx_n) \right)^2
+$$
+As a starting point, it has been decided to chose a simple least squares regression  to compute $\ww$ directly. The parameters are given by the following expression:
+$$
+\ww^* = (\XX^T\XX)^{-1}\XX^T\yy
+$$
+which leads to a prediction for an unseen datapoint $\xx_m$ given by
+$$
+\hat{y}_m := \xx_m^T\ww^*=\xx_m^T(\XX^T\XX)^{-1}\XX^T\yy,
+$$
+where $\yy = \begin{bmatrix}y_1 \\ y_2 \\ \vdots \\y_N \end{bmatrix}$ and $\XX = \begin{bmatrix}x_{11} & x_{12} & \hdots & x_{1D} \\ x_{21} & x_{22} & \hdots & x_{2D} \\ \vdots & \vdots & \ddots & \vdots \\ x_{N1} & x_{N2} & \hdots & x_{ND} \end{bmatrix}$.
+Linear models are inherently not very rich. A way to increase their representational power  one can boost the input by adding a polynomial basis of arbitrary degree $M$:
+$$
+\phi(\xx_n) = \begin{bmatrix} 1 & x_{n1} & x_{n1}^2 & \hdots & x_{n1}^M \\ 1& x_{n2} & x_{n2}^2 & \hdots & x_{n2}^M \\ \vdots & \vdots & \vdots & \ddots & \vdots \\ 1& x_{nD} & x_{nD}^2 & \hdots & x_{nD}^M \end{bmatrix}.
+$$
+We then fit a linear model to the extended feature vector $\phi(\xx_n)$:
+$$
+y_n \approx \phi(\xx_n)^T\ww.
+$$
+
 %As it can be seen on the figure cross_validation_least_poly, it is ovious than the smalest error is obtained by chosing a degree of 2 for the least square. However not every polynomial basis could be used because
 %some basis leads to a unsolvable solution, that's the reason why some degree point are missing on the figure.
 %The least square with a polynomial basis of 2 gives a score kaggle of 0.7718
 
 %poly
-%Since linear models are inherently not very rich the following
-%is a standard \trick" to make them more powerful.
-%In order to increase the representational power of linear mod-
-%els we typically \augment" the input. E.g., if the input (fea-
-%ture) is one-dimensional we might add a polynomial basis (of
-%arbitrary degree M),
-%(xn) = [1; xn; x2
-%n; x3
-%n; : : : ; xMn
-%]
-%so that we end up with an extended feature vector.
-%We then t a linear model to this extended feature vector
-%(xn):
-%yn  w0 + w1xn + w2x2
-%n + : : : + wMxMn
-%= (xn)>w:
+
 
 \section{Results}
 In order to measure the quality of a method, the predictions obtained are sent to the predictive modelling competitions platform \textit{Kaggle} which returns a score between 0 and 1.\\
 \section{Discussion}
-
+MSE is not a good cost function
+when outliers are present.
 \section{Summary}
 
 %
