@@ -38,11 +38,20 @@
 
 % \mathbf
 \newcommand{\m}[1]{\mathbf{#1}}
+\newcommand{\xx}{\mathbf{x}}
+\newcommand{\xt}{\mathbf{x}^T}
+\newcommand{\yy}{\mathbf{y}}
+\newcommand{\ww}{\mathbf{w}}
+
 % argmin
 \newcommand{\argmin}[1]{\underset{#1}{\operatorname{argmin}}}
 \newcommand{\argmax}[1]{\underset{#1}{\operatorname{argmax}}}
 \newcommand{\mmin}[1]{\underset{#1}{\operatorname{min}}}
 \newcommand{\mmax}[1]{\underset{#1}{\operatorname{max}}}
+
+\newcommand*\colvec[3][]{
+    \begin{pmatrix}\ifx\relax#1\relax\else#1\\\fi#2\\#3\end{pmatrix}
+}
 
 
 \begin{document}
@@ -72,9 +81,43 @@ In this paper, a machine learning method that efficiently estimates the likeliho
 Two specific data sets are used to optimize the method. The first set $S_{t}$ is called the training set and contains 250000 observations. It is used to develop the model. The second set $S_{v}$ is the validation set and has 568238 events. These data are used to validate the model and make sure that we the model does not overfit the data of $S_t$. In both sets, the events are characterized by 30 features. Among them, 13 are "raw" quantities about the bunch collision as measured by the detector and 17 are quantities computed from the raw features, which were selected by the physicists. Finally, let's point out that in some cases the variables of some entries are not available. In order to handle the missing data, it is primordial to apply a preprocessing stage.
 
 \section{Methodology}
+To predict the nature of the measurement, we need to find a function that best approximates the output $\yy$ with the given inputs $\xx$
+\begin{equation}
+y_n \approx f(\mathbf{x_n}) \ \forall n.
+\end{equation}
+A common choice for $f$ is to use a linear regression
+\begin{equation}
+f(\mathbf{x_n}) = w_0 + \xx_n^T  (w_1 ... \w_D)^T
+\end{equation}
+
+%Here, w = (w0;w1) are the two parameters
+%of the model.
+
+%As a starting point, it has been decided to chose a simple least squares regression  to compute directly the w vector together with different degree polynomial basis.
+%As it can be seen on the figure cross_validation_least_poly, it is ovious than the smalest error is obtained by chosing a degree of 2 for the least square. However not every polynomial basis could be used because
+%some basis leads to a unsolvable solution, that's the reason why some degree point are missing on the figure.
+%The least square with a polynomial basis of 2 gives a score kaggle of 0.7718
+
+%poly
+%Since linear models are inherently not very rich the following
+%is a standard \trick" to make them more powerful.
+%In order to increase the representational power of linear mod-
+%els we typically \augment" the input. E.g., if the input (fea-
+%ture) is one-dimensional we might add a polynomial basis (of
+%arbitrary degree M),
+%(xn) = [1; xn; x2
+%n; x3
+%n; : : : ; xMn
+%]
+%so that we end up with an extended feature vector.
+%We then t a linear model to this extended feature vector
+%(xn):
+%yn  w0 + w1xn + w2x2
+%n + : : : + wMxMn
+%= (xn)>w:
 
 \section{Results}
-
+In order to measure the quality of a method, the predictions obtained are sent to the predictive modelling competitions platform \textit{Kaggle} which returns a score between 0 and 1.\\
 \section{Discussion}
 
 \section{Summary}

@@ -32,7 +32,6 @@ def compute_gradient(y, tx, w):
 # ***************************************************    
 def least_squares_GD(y, tx, initial_w, max_iters, gamma):
     """Linear regression using gradient descent"""
-    ws = [initial_w]
     w = initial_w
     for n_iter in range(max_iters):
         grad,_ = compute_gradient(y,tx,w)
