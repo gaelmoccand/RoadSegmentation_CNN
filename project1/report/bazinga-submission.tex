@@ -85,14 +85,11 @@ To predict the nature of the measurement, we need to find a function that best a
 \begin{equation}
 y_n \approx f(\mathbf{x_n}) \ \forall n.
 \end{equation}
-A common choice for $f$ is to use a linear regression
+A common choice is to use a linear regression, i.e.
 \begin{equation}
-f(\mathbf{x_n}) = w_0 + \xx_n^T  (w_1 ... \w_D)^T
+f(\mathbf{x_n}) = w_0 +   (w_1 \ldots w_D) \xx_n =: \tilde{\xx}_n^T \ww
 \end{equation}
-
-%Here, w = (w0;w1) are the two parameters
-%of the model.
-
+where $\ww = (w_0 \ldots w_D)$ are the parameters of the models. Note that we add a tilde over the input vector to indicate that it contains an offset term.\\
 %As a starting point, it has been decided to chose a simple least squares regression  to compute directly the w vector together with different degree polynomial basis.
 %As it can be seen on the figure cross_validation_least_poly, it is ovious than the smalest error is obtained by chosing a degree of 2 for the least square. However not every polynomial basis could be used because
 %some basis leads to a unsolvable solution, that's the reason why some degree point are missing on the figure.
