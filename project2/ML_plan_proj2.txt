@@ -1,0 +1,5 @@
+16-23.11 Install scikit & tensorflow + play around + read 4 links in project2 description section "Guidelines for Machine Learning Projects"
+23-30.11 Get a simple classifier working with cross validation (with scikit)
+30-7.12 Focus on preprocessing
+7-14.12 Find best classifier
+14-21.12 write  (4 pages)
