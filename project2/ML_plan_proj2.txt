@@ -3,3 +3,20 @@
 30-7.12 Focus on preprocessing
 7-14.12 Find best classifier
 14-21.12 write  (4 pages)
+
+IDEAS for feature extraction:
+- median filter     
+- line hough transform
+- harris corner
+- ridge detection
+- for hough and ridge -> add direction or line
+- distance to closest line
+- distance to the 2 closes lines
+
+PREPROCESSING:
+- Work on RGB or Gray (-> export rgb + gray images to see what they look like)
+- morphological operators to merge lines
+- blob detection
+
+
+MODELS:
