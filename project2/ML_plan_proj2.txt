@@ -8,10 +8,12 @@ IDEAS for feature extraction:
 - median filter     
 - line hough transform
 - harris corner
+- Canny edge
 - ridge detection
 - for hough and ridge -> add direction or line
 - distance to closest line
 - distance to the 2 closes lines
+- gradient
 
 PREPROCESSING:
 - Work on RGB or Gray (-> export rgb + gray images to see what they look like)
@@ -20,3 +22,4 @@ PREPROCESSING:
 
 
 MODELS:
+- SVM
