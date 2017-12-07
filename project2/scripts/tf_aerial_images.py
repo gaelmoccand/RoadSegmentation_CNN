@@ -24,9 +24,10 @@ import tensorflow as tf
 NUM_CHANNELS = 3 # RGB images
 PIXEL_DEPTH = 255
 NUM_LABELS = 2
-TRAINING_SIZE = 20
+TRAINING_SIZE = 95
+PREDICTION_SIZE = 50
 VALIDATION_SIZE = 5  # Size of the validation set.
-SEED = 66478  # Set to None for random seed.
+SEED = None  # Set to None for random seed.
 BATCH_SIZE = 16 # 64
 NUM_EPOCHS = 5
 RESTORE_MODEL = False # If True, restore existing model instead of training a new one
@@ -58,7 +59,8 @@ def img_crop(im, w, h):
     return list_patches
 
 def extract_data(filename, num_images):
-    """Extract the images into a 4D tensor [image index, y, x, channels].
+    """Extract the images 
+    into a 4D tensor [image index, y, x, channels].
     Values are rescaled from [0, 255] down to [-0.5, 0.5].
     """
     imgs = []
@@ -144,9 +146,9 @@ def label_to_img(imgwidth, imgheight, w, h, labels):
     for i in range(0,imgheight,h):
         for j in range(0,imgwidth,w):
             if labels[idx][0] > 0.5:
-                l = 1
-            else:
                 l = 0
+            else:
+                l = 1
             array_labels[j:j+w, i:i+h] = l
             idx = idx + 1
     return array_labels
@@ -300,7 +302,8 @@ def main(argv=None):  # pylint: disable=unused-argument
     # Get a concatenation of the prediction and groundtruth for given input file
     def get_prediction_with_groundtruth(filename, image_idx):
 
-        imageid = "satImage_%.3d" % image_idx
+        #imageid = "satImage_%.3d" % image_idx
+        imageid = "/test_{:1d}/test_{:1d}".format(image_idx,image_idx)
         image_filename = filename + imageid + ".png"
         img = mpimg.imread(image_filename)
 
@@ -308,6 +311,20 @@ def main(argv=None):  # pylint: disable=unused-argument
         cimg = concatenate_images(img, img_prediction)
 
         return cimg
+    
+        # Get a concatenation of the prediction and groundtruth for given input file
+    def get_prediction_without_concat(filename, image_idx):
+
+        #imageid = "test_%.1d/test_%.1d" % image_idx % image_idx
+        imageid = "/test_{:1d}/test_{:1d}".format(image_idx,image_idx)
+        image_filename = filename + imageid + ".png"
+        img = mpimg.imread(image_filename)
+
+        img_prediction = get_prediction(img)
+        img_8 = img_float_to_uint8(img_prediction)
+        #cimg = concatenate_images(img, img_prediction)
+
+        return img_8
 
     # Get prediction overlaid on the original image for given input file
     def get_prediction_with_overlay(filename, image_idx):
@@ -507,14 +524,17 @@ def main(argv=None):  # pylint: disable=unused-argument
 
 
         print ("Running prediction on training set")
-        prediction_training_dir = "predictions_training/"
+        prediction_training_dir = "predictions_training_tf/"
+        train_data_filename = "test_set_images/test_set_images"
         if not os.path.isdir(prediction_training_dir):
             os.mkdir(prediction_training_dir)
-        for i in range(1, TRAINING_SIZE+1):
+        for i in range(1, PREDICTION_SIZE+1):
             pimg = get_prediction_with_groundtruth(train_data_filename, i)
+            Image.fromarray(pimg).save(prediction_training_dir + "predictionOverlay_" + str(i) + ".png")
+            pimg = get_prediction_without_concat(train_data_filename, i)
             Image.fromarray(pimg).save(prediction_training_dir + "prediction_" + str(i) + ".png")
-            oimg = get_prediction_with_overlay(train_data_filename, i)
-            oimg.save(prediction_training_dir + "overlay_" + str(i) + ".png")       
+           # oimg = get_prediction_with_overlay(train_data_filename, i)
+           # oimg.save(prediction_training_dir + "overlay_" + str(i) + ".png")       
 
 if __name__ == '__main__':
     tf.app.run()
