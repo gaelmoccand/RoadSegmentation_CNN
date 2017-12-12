@@ -24,14 +24,15 @@ import tensorflow as tf
 NUM_CHANNELS = 3 # RGB images
 PIXEL_DEPTH = 255
 NUM_LABELS = 2
-TRAINING_SIZE = 95
+TRAINING_SIZE = 10
 PREDICTION_SIZE = 50
 VALIDATION_SIZE = 5  # Size of the validation set.
 SEED = None  # Set to None for random seed.
-BATCH_SIZE = 16 # 64
-NUM_EPOCHS = 5
+BATCH_SIZE = 5 #16
+NUM_EPOCHS = 1
 RESTORE_MODEL = False # If True, restore existing model instead of training a new one
 RECORDING_STEP = 1000
+GENERATE_PRED = False
 
 # Set image patch size in pixels
 # IMG_PATCH_SIZE should be a multiple of 4
@@ -75,6 +76,7 @@ def extract_data(filename, num_images):
             print ('File ' + image_filename + ' does not exist')
 
     num_images = len(imgs)
+    print(num_images)
     IMG_WIDTH = imgs[0].shape[0]
     IMG_HEIGHT = imgs[0].shape[1]
     N_PATCHES_PER_IMAGE = (IMG_WIDTH/IMG_PATCH_SIZE)*(IMG_HEIGHT/IMG_PATCH_SIZE)
@@ -433,7 +435,7 @@ def main(argv=None):  # pylint: disable=unused-argument
     batch = tf.Variable(0)
     # Decay once per epoch, using an exponential schedule starting at 0.01.
     learning_rate = tf.train.exponential_decay(
-        0.01,                # Base learning rate.
+        0.001,                # Base learning rate.
         batch * BATCH_SIZE,  # Current index into the dataset.
         train_size,          # Decay step.
         0.95,                # Decay rate.
@@ -521,20 +523,35 @@ def main(argv=None):  # pylint: disable=unused-argument
                 # Save the variables to disk.
                 save_path = saver.save(s, FLAGS.train_dir + "/model.ckpt")
                 print("Model saved in file: %s" % save_path)
-
-
-        print ("Running prediction on training set")
-        prediction_training_dir = "predictions_training_tf/"
-        train_data_filename = "test_set_images/test_set_images"
-        if not os.path.isdir(prediction_training_dir):
-            os.mkdir(prediction_training_dir)
-        for i in range(1, PREDICTION_SIZE+1):
-            pimg = get_prediction_with_groundtruth(train_data_filename, i)
-            Image.fromarray(pimg).save(prediction_training_dir + "predictionOverlay_" + str(i) + ".png")
-            pimg = get_prediction_without_concat(train_data_filename, i)
-            Image.fromarray(pimg).save(prediction_training_dir + "prediction_" + str(i) + ".png")
-           # oimg = get_prediction_with_overlay(train_data_filename, i)
-           # oimg.save(prediction_training_dir + "overlay_" + str(i) + ".png")       
+        
+       # Compute the offset of the current minibatch in the data.
+       # Note that we could use better randomization across epochs.
+        
+        
+        batch_data = train_data
+        batch_labels = train_labels
+        # This dictionary maps the batch data (as a numpy array) to the
+        # node in the graph is should be fed to.
+        feed_dict = {train_all_data_node: batch_data,train_all_data_node: batch_labels}
+        # Run the graph and fetch some of the nodes.
+        _, l, lr, predictions = s.run([optimizer, loss, learning_rate, train_all_prediction],feed_dict=feed_dict)
+        
+        print ('Train loss: %.3f, learning rate: %.6f' % (l, lr))
+        print ('Train error: %.1f%%' % error_rate(predictions,batch_labels))
+        
+        if GENERATE_PRED : 
+            print ("Running prediction on training set")
+            prediction_training_dir = "predictions_training_tf/"
+            train_data_filename = "test_set_images/test_set_images"
+            if not os.path.isdir(prediction_training_dir):
+                os.mkdir(prediction_training_dir)
+            for i in range(1, PREDICTION_SIZE+1):
+                pimg = get_prediction_with_groundtruth(train_data_filename, i)
+                Image.fromarray(pimg).save(prediction_training_dir + "predictionOverlay_" + str(i) + ".png")
+                pimg = get_prediction_without_concat(train_data_filename, i)
+                Image.fromarray(pimg).save(prediction_training_dir + "prediction_" + str(i) + ".png")
+               # oimg = get_prediction_with_overlay(train_data_filename, i)
+               # oimg.save(prediction_training_dir + "overlay_" + str(i) + ".png")       
 
 if __name__ == '__main__':
     tf.app.run()
