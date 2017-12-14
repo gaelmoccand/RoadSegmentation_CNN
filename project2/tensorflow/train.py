@@ -20,7 +20,7 @@ class TrainModel(object):
         self.__input_val = input_val
         self.__memfrac = mem_frac
 
-    def train(self, mode='segnet', epochs=20, learning_rate_init=0.001, checkpoint='', batch_size=20, l2_reg=0.0001, nclass=2, do_resize=False):
+    def train(self, mode='segnet', epochs=20, learning_rate_init=0.001, checkpoint='', batch_size=40, l2_reg=0.0001, nclass=2, do_resize=False):
     #def train(self, mode='segnet', epochs=20, learning_rate_init=0.001, checkpoint='./bestmodel/0.48/model-16', batch_size=20, l2_reg=0.0001, nclass=2, do_resize=False):
 
         # Avoid allocating the whole memory
