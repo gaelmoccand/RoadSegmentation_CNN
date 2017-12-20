@@ -1,0 +1,21 @@
+Data
+
+For this project, a set N = 100 training images was provided with a size of 400x400 pixels in rgb. The set contains different aerial pictures of different urban areas.
+Together with this traing set, the corresponding 100 groundtruth grayscale images is also provided.
+However, theses groundtruth images are required to be converted into label images containing only 2 classes including the road label (y=1). 
+The pixel grayscale threshold which decides if the current pixel belongs to the road label orn not has been set to 25% of the pixel grayscale following 
+the python example which was provided. Therefore this pixel threashold has a direct impact on the width of the road label in the computed label image.
+
+The small size of the training set (100 images only) is not big enough to avoid overfitting of the model. Moreover in order to train any convolutional neural network correctly
+it is therefore necesserary to augment the dataset using some transformations. It has been decided to 
+use rotation of every 5 degrees for each images (5,10,15,20 degrees so on) to generate a set of images for every directions of the roads. Analysing the training set, it is obvious that the set contains more pictures
+of vertical and horizontal roads. That's the reaon why the rotation transformation has been chosen.
+Therefore for each image of the original training set 71 images will be generated using the rotations, resulting of a new training dataset of 7100 images. 
+This augmented training set is then suitable for training different convolutional neural networks. 
+
+The features extraction methodology described in the provided examples (segment_aerial_images.ipynb and tf_aerial_images.py) using a patch of size 16x16 pixels has a drawback. 
+This methoddology based on patches flatten the data and therfore throws away information about the 2D structure of the image.The adcantage of this technique is the the fact that 
+it requires less computer power than a fully pixel based methodology. 
+
+Concerning the cross-validation, the training set has been split into 2 parts 80% for the taining (5680 images) and 20% (1420 images) for the testing all methodologies. 
+In the case of the convolutional neural network approach a batch of 50 images is used for each training step with a reduced size of the input image (224x224 pixels) in order to speed up the training of the neural network.
