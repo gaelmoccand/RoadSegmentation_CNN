@@ -32,7 +32,6 @@ class HandleData:
     __val_batch_pointer = 0
 
     def __init__(self, path='DrivingData.h5', path_val='', train_perc=0.8, val_perc=0.2, shuffle=True):
-        self.__augment = AugmentBatch()
         self.__train_perc = train_perc
         self.__val_perc = val_perc
         print("Loading training data")
@@ -97,14 +96,6 @@ class HandleData:
                 label = np.expand_dims(label, axis=-1)
             y_out.append(label)
             self.__train_batch_pointer += batch_size
-
-        # Augment dataset if needed
-        if should_augment == True:
-            # Augment training batch
-            augmented_batch = self.__augment.augment(list(zip(x_out, y_out)))
-            # Expand zip into list
-            x_out, y_out = map(list, zip(*augmented_batch))
-
 
         return x_out, y_out
 

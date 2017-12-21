@@ -9,21 +9,98 @@ import matplotlib.image as mpimg
 from PIL import Image
 from mask_to_submission import *
 import models
+import lmdb
+import pandas as pd
+import random
+from os import walk
 
 
 class Run(object):
 
-    def __init__(self,  logdir='./logs',lmdb='../training/lmdb', input_val='',mem_frac=0.8):
+    def __init__(self,  logdir='./logs',input='./training/lmdb', input_val='',mem_frac=0.8):
 
         self.__logdir = logdir
         self.__memfrac = mem_frac
-        self.__input = lmdb
+        self.__input = input
         self.__input_val = input_val
         
     # Used to predict the lmdb file from an image data set
-    # cmd: 
-    def create_lmdb(self,train_set = "../test_set_images"):  
+    # cmd: run.py create_lmdb --train_set='training' --input='training/lmdb'
+    def create_lmdb(self,train_set = 'training', lmdb_path= './training/lmdb', augment=False):  
+    
+        def img_to_label(img):
+            PIXEL_THRESH = 191 #pixel threshold for black and white (road) limit discussed in the report
+            label = img
+            label[ label < PIXEL_THRESH] = 0
+            label[ label >= PIXEL_THRESH] = 1
+            return label
+    
+        TRAIN_ANOTATION = train_set+'/groundtruth/'
+        TRAIN_IMAGES = train_set+'/images/'
+        IMAGE_WIDTH = 224
+        IMAGE_HEIGHT = 224
         
+        dataset = []
+
+        # Get list of all files inside directory TRAIN_IMAGES
+        list_images_train = os.listdir(TRAIN_IMAGES)
+
+        # Iterate the list, loading the image and matching label
+        for img_path in list_images_train:
+            # Get the sample name
+            sample = img_path.split('.')[0]
+            label_name = sample+'.png'
+            img_path = TRAIN_IMAGES + img_path
+            label_path = TRAIN_ANOTATION + label_name
+    
+            # Read images and resize
+            img = misc.imread(img_path)
+            label = misc.imread(label_path)
+            img = misc.imresize(img,[IMAGE_HEIGHT, IMAGE_WIDTH], interp='nearest')
+            label = img_to_label(misc.imresize(label,[IMAGE_HEIGHT, IMAGE_WIDTH], interp='nearest'))  
+            if img.shape != (IMAGE_WIDTH,IMAGE_WIDTH,3):
+                print('Error image shape:', img_path, 'shape:', img.shape)
+                continue
+    
+            if label.shape != (IMAGE_WIDTH,IMAGE_WIDTH):
+                print('Error label shape:', label_path, 'shape:', label.shape)
+                continue
+    
+            # Append image and label tupples to the dataset list
+            dataset.append((img,label))
+            
+        random.shuffle(dataset)
+        print('Dataset size:', len(dataset))
+        
+        # get size in bytes of lists
+        size_bytes_images = dataset[0][0].nbytes * len(dataset)
+        size_bytes_labels = dataset[0][1].nbytes * len(dataset)
+        total_size = size_bytes_images + size_bytes_labels
+        print('Total size(bytes): %d' % (size_bytes_images+size_bytes_labels))
+        
+        # Open LMDB file
+        # You can append more information up to the total size.
+        env = lmdb.open(lmdb_path, map_size=total_size+total_size/2)
+        
+        # Counter to keep track of LMDB index
+        idx_lmdb = 0
+        # Get a write lmdb transaction, lmdb store stuff with a key,value(in bytes) format
+        with env.begin(write=True) as txn:
+            # Iterate on batch    
+            for (tup_element) in dataset:
+                img,label = tup_element        
+        
+                # Get image shapes
+                shape_str_img = '_'.join([str(dim) for dim in img.shape])
+                shape_str_label = '_'.join([str(dim) for dim in label.shape])
+        
+                label_id = ('label_{:08}_'+shape_str_label).format(idx_lmdb)   
+                # Encode shape information on key
+                img_id = ('img_{:08}_'+shape_str_img).format(idx_lmdb)           
+                #Put data
+                txn.put(bytes(label_id.encode('ascii')),label.tobytes())                
+                txn.put(bytes(img_id.encode('ascii')),img.tobytes())                        
+                idx_lmdb += 1
    
 
     # Used to predict the roads on  data sata images
