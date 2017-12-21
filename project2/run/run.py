@@ -13,17 +13,22 @@ import models
 
 class Run(object):
 
-    def __init__(self,  logdir='./logs',mem_frac=0.8):
+    def __init__(self,  logdir='./logs',lmdb='../training/lmdb', input_val='',mem_frac=0.8):
 
         self.__logdir = logdir
         self.__memfrac = mem_frac
+        self.__input = lmdb
+        self.__input_val = input_val
         
-    def img_float_to_uint8(img):
-        rimg = img - np.min(img)
-        rimg = (rimg / np.max(rimg) * PIXEL_DEPTH).round().astype(np.uint8)
-        return rimg
+    # Used to predict the lmdb file from an image data set
+    # cmd: 
+    def create_lmdb(self,train_set = "../test_set_images"):  
+        
+   
 
-    def predict(self, checkpoint='./best_model/model-12',test_set = "../test_set_images",pred_size=50):
+    # Used to predict the roads on  data sata images
+    # cmd: python run.py predict --pred_size=3 --test_set='../test_set_images'  --trained_model='./best_model/model-12' 
+    def predict(self, trained_model='./best_model/model-12',test_set = "../test_set_images",pred_size=50):
     
         def img_float_to_uint8(img):
             PIXEL_DEPTH = 255
@@ -34,7 +39,7 @@ class Run(object):
         
         def get_prediction_without_concat(filename, image_idx):
             IMAGE_SIZE=224
-            PRED_SIZE_IMG=608
+            PRED_SIZE_IMG=608 # the test images size are different do not why
             
             imageid = "/test_{:1d}/test_{:1d}".format(image_idx,image_idx)
             image_filename = filename + imageid + ".png"
@@ -55,10 +60,10 @@ class Run(object):
         anotation_prediction = segmentation_model.anotation_prediction
 
         # Load the pretrained tensorflow model
-        print("Loading model: %s" % checkpoint)
+        print("Loading model: %s" % trained_model)
         sess = tf.InteractiveSession()
         saver = tf.train.Saver()
-        saver.restore(sess, checkpoint)
+        saver.restore(sess, trained_model)
 
         # Use the pretrained Segnet Gate architecture to make the prediction on the set
         print ("Running prediction on training set")
@@ -81,8 +86,10 @@ class Run(object):
         print(submission_filename + " generated")
 
     
+    # train the SegNet model
+    # cmd: python run.py train --lmdb='lmdb' --epochs=5 --batch_size=10
     #code from https://github.com/leonardoaraujosantos/LearnSegmentation
-    def train(self, mode='segnet_connected_gate', epochs=4, learning_rate_init=0.001, checkpoint='', batch_size=50, l2_reg=0.0001, nclass=2, do_resize=False):
+    def train(self , epochs=4, learning_rate_init=0.001, checkpoint='', batch_size=50, l2_reg=0.0001, nclass=2, do_resize=False):
 
         # Avoid allocating the whole memory
         gpu_options = tf.GPUOptions(per_process_gpu_memory_fraction=self.__memfrac)
@@ -90,7 +97,7 @@ class Run(object):
 
         # Regularization value
         L2NormConst = l2_reg
-
+        mode='segnet_connected_gate'
         print('Train segmentation model:', mode)
 
         # Build model
@@ -172,7 +179,7 @@ class Run(object):
         for epoch in range(epochs):
             for i in range(int(data.get_num_images() / batch_size)):
                 # Get training batch
-                xs_train, ys_train = data.LoadTrainBatch(batch_size, should_augment=True, do_resize=do_resize)
+                xs_train, ys_train = data.LoadTrainBatch(batch_size, should_augment=False, do_resize=do_resize)
 
                 # Send training batch to tensorflow graph (Dropout enabled)
                 train_step.run(feed_dict={model_in: xs_train, labels_in: ys_train})
