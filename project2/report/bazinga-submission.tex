@@ -110,15 +110,33 @@ Again, the model is trained with the augmented training set of $N=7100$ images a
 This time, the accuracy of the method is evaluated using the label of each pixel of the images of the testing set.
 
 \section{Results}
-The first method  using the linear logistic regression has been dropped pretty fast because even with the feature transformation (taking the square root), the prediction didn't exceed 0.6 on the testing set. Taking into account that prediction by flipping a coin would give 0.5, it is not a big achievement. This is probably due to the fact that the mean, variance and HOG are not sufficient to differentiate 
+The first method  using the linear logistic regression has been dropped pretty fast because even with the features transformation (taking the square root), the prediction didn't exceed 0.59 on the testing set. Taking into account that prediction by flipping a coin would give 0.5, it is not a big achievement. This is probably due to the fact that the mean, variance and HOG are not sufficient to differentiate the roads from the rest of the objects. \\
+Regarding SegNet, the results are way more encouraging. Indeed the prediction rate almost reaches 0.9, witch both SegNet connected (0.86) and connected-gate (0.87).
 \scalefig{pred}{0.9}{Complex example of satellite image}{fig:pred}
 \scalefig{pred_label}{0.8}{Prediction of the complex example using SegNet}{fig:pred_label}
 
+\begin{table} [htbp]
+  \centering
+  \begin{tabular}[c]{|l|l|}
+    \hline
+    Method & Prediction rate\\
+    \hline
+    Patch + logistic & 0.59\\
+    SegNet connected & 0.86\\
+    SegNet connected gate & 0.87\\
+    \hline
+  \end{tabular}
+  \caption{Summary of prediction rate of different methods.}
+  \label{tab:results}
+\end{table}
 
 \section{Discussion}
 The logistic regression yields pretty disappointing results. This can be explained by the reasons given above and by the fact that using patches has a main drawback. With this method we loose the continuity of the image and thus the information of the neighbor pixels at the boundaries of the patches. For instance, since a road is continuous, there is a bigger chance that a pixel is a road if its neighbors are roads than if they are part of the background. With more time, it would be interesting to keep the same prediction method but use much more features and possibly get information on the neighbor patches.\\
-%There are few things that can probably be improved in order to get better prediction. Firstly MSE is not a good cost function when outliers are present which is the case here. One should thus look for another cost function. Then, least squares is a pretty basic model. The next step would be to use a logistic regression instead. However, we could not manage to make it converge.\\
-%Regarding preprocessing, an improvement would be to weight the features independently instead of having them equally weighted. Moreover, there is a feature which only has integer numbers. A possible improvement would be not to feed it to the polynomial basis and use this feature directly. Unfortunately, this trick has not shown much improvement on the final score. Finally, when the preprocessing changed from simple to complex, the whole optimization process should be done again to guarantee the best prediction with the appropriate hyperparameters.
+But finding the most relevant features that would lead to a more accurate with the same training algorithm is a tedious job. For this reason we decided to use a deep learning method instead.\\
+In the case of SegNet, it actually overfits a bit. This can be observed on Figure \ref{fig:overfit} which shows that after 7 iterations, the spatial loss increases again
+
+\scalefig{overfitting}{0.9}{Spatial loss w.r.t the epoch number. It overfits after 6 epochs.}{fig:overfit}
+
 
 \section{Summary}
 In this work we have shown that one can have a fairly good prediction using SegNet.
