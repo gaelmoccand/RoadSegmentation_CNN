@@ -1,4 +1,0 @@
-The starting point is the least square with a polynomial basis of degree 2 gives a score kaggle of 0.65773 without preprocessing the missing value. If we take care of the missing vaules (-999) 
-the scores increase to 0.77176 staying with the same degree 2. According to the cross validation there is no need to increase the polynomial degree in this case.
-If the prediction is based on a ridge regression  of degree 5 and lambda of 0.0001t the score reaches 0.78581. With the same hyperparameters with the same preprocessingof the least square the scores 
-is 0.79676. The scores increases a little bit by dropping the features 11 and 18. So our final score is 0.79693 using ridge with lambda 0.0001 and a degree of oly of 5 with preprocessing.
