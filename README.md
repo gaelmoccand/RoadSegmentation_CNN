@@ -14,6 +14,8 @@ of algorithm. The first one is a linear logistic regression
 whereas the second one, called SegNet [1] uses a more
 complicated scheme based on a convolutional neural
 network (CNN).
+
+[Fig1. Exampel of satellite image ](projectRoadSegmentation/report/pics/satImage.png)
  
  
  
