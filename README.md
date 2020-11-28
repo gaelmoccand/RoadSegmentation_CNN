@@ -77,7 +77,8 @@ angle and weighted by the magnitude. This makes a total
 of 14 features per patch. Since we have 50 × 50 = 2500
 patches, it makes a total of 35000 features per image.
 
-![Fig3. Ground truth of satellite image example ](projectRoadSegmentation/report/pics/prediction_patch.png) 
+![Fig3. Ground truth of satellite image example ](projectRoadSegmentation/report/pics/prediction_patch.png)
+
 Fig3. Example of a prediction using 16 × 16 patches. The predicted
 road are in red. Each red square correspond to a patch
 
@@ -91,10 +92,12 @@ features are fed to a simple linear logistic regression using
 scikit-learn.
 
 
-![Fig4. ](projectRoadSegmentation/report/pics/hist_feats.png) 
+![Fig4. ](projectRoadSegmentation/report/pics/hist_feats.png)
+
 Fig4. Histogram of the features computed on one of the satellite image
 
-![Fig5. ](projectRoadSegmentation/report/pics/hist_sqrt_feats.png) 
+![Fig5. ](projectRoadSegmentation/report/pics/hist_sqrt_feats.png)
+
 Fig5. Histogram of the square root of the features computed on the
 same image
 
@@ -118,7 +121,8 @@ connected”. Both versions take the output of the previous
 convolver and the output convolver of the corresponding
 Encoder part as input for the Decoder.
 
-![Fig6. ](projectRoadSegmentation/report/pics/segnet.png) 
+![Fig6. ](projectRoadSegmentation/report/pics/segnet.png)
+
 Fig6. SegNet architecture
 
 In order to apply a cross-validation, the training set is randomly split into 2 parts. 80% is used for training (5680
@@ -146,12 +150,14 @@ Indeed the prediction rate almost reaches 0.9, with both
 SegNet connected (0.86) and connected gate (0.87).
 
 
-![Fig7. ](projectRoadSegmentation/report/pics/pred.png) 
+![Fig7. ](projectRoadSegmentation/report/pics/pred.png)
+
 Fig7. Complex example of satellite image. There are roads in many
 directions and trees on the road
 
 
-![Fig8. ](projectRoadSegmentation/report/pics/pred_label.png) 
+![Fig8. ](projectRoadSegmentation/report/pics/pred_label.png)
+
 Fig8. Prediction of the complex example using SegNet
 
 ## Discussion
@@ -175,7 +181,8 @@ again. To avoid this behavior, it would be good to have a
 broader training set in the sense that its images do not differ
 much.
 
-![Fig9. ](projectRoadSegmentation/report/pics/overfitting.png) 
+![Fig9. ](projectRoadSegmentation/report/pics/overfitting.png)
+
 Fig9. Spatial loss w.r.t the epoch number. It overfits after epoch 6.
 
 ## Summary
