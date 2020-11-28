@@ -75,5 +75,20 @@ angle and weighted by the magnitude. This makes a total
 of 14 features per patch. Since we have 50 × 50 = 2500
 patches, it makes a total of 35000 features per image.
 
+![Fig3. Ground truth of satellite image example ](projectRoadSegmentation/report/pics/prediction_patch.png) 
+Fig3. Example of a prediction using 16 × 16 patches. The predicted
+road are in red. Each red square correspond to a patch
+
+The feature matrix is pretty sparse like shown on Figure
+4. The histogram shows a large peak of zeros followed by a
+decay. This decay-like shape suggests us to manipulate the
+features in order to get a distribution following a normal
+distribution. This can be obtained by taking the square root
+of the features and can be observed on Figure 5. These
+features are fed to a simple linear logistic regression using
+scikit-learn.
+
+
+
  
  [Report can be found here in pdf](projectRoadSegmentation/bazinga-submission.pdf)
