@@ -179,7 +179,7 @@ it actually overfits a bit. This can be observed on Figure 9
 which shows that after 7 iterations, the spatial loss increases
 again. To avoid this behavior, it would be good to have a
 broader training set in the sense that its images do not differ
-much.
+much. It would be also good to try to tune Segnet to have better results.
 
 ![Fig9. ](projectRoadSegmentation/report/pics/overfitting.png)
 
