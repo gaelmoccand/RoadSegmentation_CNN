@@ -15,7 +15,7 @@ whereas the second one, called SegNet [1] uses a more
 complicated scheme based on a convolutional neural
 network (CNN).
 
-![Fig1. Exampel of satellite image ](projectRoadSegmentation/report/pics/satImage.png)
+![Fig1. Exampel of satellite image ](projectRoadSegmentation/report/pics/satImage.png) Fig1. Exampel of satellite image 
 
 A set of N = 100 training images of size 400 × 400
 pixels is provided. The set contains different aerial
@@ -35,7 +35,43 @@ maximum value is 255 which sets the threshold to 191.
 This pixel threshold has a direct impact on the width of the
 road label in the computed label image.
  
- ![Fig2. Ground truth of satellite image example ](projectRoadSegmentation/report/pics/satImage_gt.png)
+ ![Fig2. Ground truth of satellite image example ](projectRoadSegmentation/report/pics/satImage_gt.png) Fig2. Ground truth of satellite image example 
+ 
+ The problem that arises with such a small training set
+(100 images only) is overfitting. Moreover in order to train
+any convolutional neural network properly it is necessary
+to augment the dataset. Analysing the training set, it is
+obvious that it contains mainly pictures with strictly vertical
+and horizontal roads. For that reason, creating new images
+by rotating the original ones allows to increase the size of
+the dataset and generates data which will be useful to better
+train the algorithm. Specifically, we rotate each image by
+angles going from 5 to 355 degrees every 5 degrees (i.e. 5,
+10, 15,..., 355). That way we generate a set of images with
+roads in every directions. In summary, for each image of
+the original training set, 70 images are generated using therotations, resulting in a new training set of 7100 images.
+This augmented training set is then suitable for the training
+of the CNN.
+
+## Methodology
+
+In order to gain computational efficiency, square patches
+can be used instead of working with every pixels (see Figure
+3). This make sense because a road is never composed by
+a single pixel but is rather made of blocks of pixels. The
+smaller the patch, the longer the simulations, but the finer
+the prediction. It is therefore important to find a trade-off.
+We’ve found that taking patches of size 8 × 8 gives decent
+result in a reasonable time. Within each patch, the mean and
+the variance in the 3 channels (RGB) are computed. On top
+of these 6 features, we add the computation of the histogram
+of oriented gradients (HOG) in 8 directions. The HOG is a
+descriptor used in many computer vision tasks for object
+detection purpose. It also consists of splitting the image in
+patches and gives their gradient orientation quantized by the
+angle and weighted by the magnitude. This makes a total
+of 14 features per patch. Since we have 50 × 50 = 2500
+patches, it makes a total of 35000 features per image.
 
  
  [Report can be found here in pdf](projectRoadSegmentation/bazinga-submission.pdf)
