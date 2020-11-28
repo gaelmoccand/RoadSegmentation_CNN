@@ -89,6 +89,32 @@ features are fed to a simple linear logistic regression using
 scikit-learn.
 
 
+![Fig4. ](projectRoadSegmentation/report/pics/hist_feats.png) 
+Fig4. Histogram of the features computed on one of the satellite image
+
+![Fig5. ](projectRoadSegmentation/report/pics/hist_sqrt_feats.png) 
+Fig5. Histogram of the square root of the features computed on the
+same image
+
+As a second step, we use the SegNet architecture which is
+a deep fully convolutional neural network. The SegNet archi-
+tecture consists of a sequence of non-linear processing layers
+(encoders) and a corresponding set of decoders followed by
+a pixelwise classifier. Typically, each encoder consists of one
+or more convolutional layers with batch normalisation and a
+rectified linear unit (ReLU) non-linearity, followed by non-
+overlapping maxpooling and sub-sampling [2]. The Figure
+6 shows the SegNet overall architecture.
+Segmentation problems often use spatial softmax to try to
+classify each pixel. The Loss L used in SegNet is basically
+a Spatial Multinomial Cross-Entropy that runs on each pixel
+of the output tensor, compared to the label image.
+The SegNet implementation in tensorflow is taken from
+the github reference code of Leonardo Araujo [3]. Two
+versions of SegNet are available: ”connected” and ”gate
+connected”. Both versions take the output of the previous
+convolver and the output convolver of the corresponding
+Encoder part as input for the Decoder.
 
  
  [Report can be found here in pdf](projectRoadSegmentation/bazinga-submission.pdf)
