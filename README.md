@@ -116,5 +116,85 @@ connected”. Both versions take the output of the previous
 convolver and the output convolver of the corresponding
 Encoder part as input for the Decoder.
 
+![Fig6. ](projectRoadSegmentation/report/pics/segnet.png) 
+Fig6. SegNet architecture
+
+In order to apply a cross-validation, the training set is randomly split into 2 parts. 80% is used for training (5680
+images) and 20% (1420 images) for testing. For SegNet,
+we use a mini batch of 50 images. The initial learning
+rate is set to 0.001 with a decay every 10000 steps. Note
+also that the size of the image is reduced to 224 × 224
+pixels in order to speed up the training of the neural network.
+
+To compare the methods, we compute the percentage of
+accurate patches (first method) or pixels (second method)
+prediction using the test set.
+
+## Results
+The first method using the linear logistic regression has
+been put aside pretty quickly because even with the fea-
+tures transformation (taking the square root), the prediction
+didn’t exceed 0.59 on the test set. Taking into account that
+prediction by flipping a coin would give 0.5, it is not a big
+achievement. This is probably due to the fact that the mean,
+variance and HOG are not sufficient to differentiate the roads
+from the rest of the objects.
+Regarding SegNet, the results are way more encouraging.
+Indeed the prediction rate almost reaches 0.9, with both
+SegNet connected (0.86) and connected gate (0.87).
+
+
+![Fig7. ](projectRoadSegmentation/report/pics/pred.png) 
+Fig7. Complex example of satellite image. There are roads in many
+directions and trees on the road
+
+
+![Fig8. ](projectRoadSegmentation/report/pics/pred_label.png) 
+Fig8. Prediction of the complex example using SegNet
+
+## Discussion
+The logistic regression yields pretty disappointing results.
+This can be explained by the reasons given above and by
+the fact that using patches has a main drawback. With this
+method we loose the continuity of the image and thus the
+information of the neighbor pixels at the boundaries of the
+patches. For instance, since a road is continuous, there is a
+bigger chance that a pixel is a road if its neighbors are roads
+than if they are part of the background. With more time, it
+would be interesting to keep the same prediction method but
+use much more features and possibly get information on the
+neighbor patches. However, finding most relevant features
+is a tedious job. For this reason we decided to use a deep
+learning method instead.
+In the case of SegNet, we were expecting higher scores but
+it actually overfits a bit. This can be observed on Figure 9
+which shows that after 7 iterations, the spatial loss increases
+again. To avoid this behavior, it would be good to have a
+broader training set in the sense that its images do not differ
+much.
+
+![Fig9. ](projectRoadSegmentation/report/pics/overfitting.png) 
+Fig9. Spatial loss w.r.t the epoch number. It overfits after epoch 6.
+
+## Summary
+In this work we have shown how to augment an images
+training using rotations. Furthermore, we have presented
+the convolutional neural network SegNet which yields a
+fairly good prediction for road segmentation on satellite images. However, one must pay attention to overfitting very
+carefully.
+
+## References
+
+[1] V. Badrinarayanan, A. Kendall, and R. Cipolla, “Segnet: A
+deep convolutional encoder-decoder architecture for image
+segmentation,” CoRR, vol. abs/1511.00561, 2015. [Online].
+Available: http://arxiv.org/abs/1511.00561
+[2] V. Badrinarayanan, A. Handa, and R. Cipolla, “SegNet: A
+Deep Convolutional Encoder-Decoder Architecture for Robust
+Semantic Pixel-Wise Labelling,” ArXiv e-prints, May 2015.
+[3] L. Araujosantos, “Learn Segmentation,” https://github.com/
+leonardoaraujosantos/LearnSegmentation, 2017.
+
+
  
  [Report can be found here in pdf](projectRoadSegmentation/bazinga-submission.pdf)
