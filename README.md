@@ -15,7 +15,8 @@ whereas the second one, called SegNet [1] uses a more
 complicated scheme based on a convolutional neural
 network (CNN).
 
-![Fig1. Exampel of satellite image ](projectRoadSegmentation/report/pics/satImage.png) Fig1. Exampel of satellite image 
+![Fig1. Exampel of satellite image ](projectRoadSegmentation/report/pics/satImage.png) 
+Fig1. Exampel of satellite image 
 
 A set of N = 100 training images of size 400 × 400
 pixels is provided. The set contains different aerial
@@ -35,7 +36,8 @@ maximum value is 255 which sets the threshold to 191.
 This pixel threshold has a direct impact on the width of the
 road label in the computed label image.
  
- ![Fig2. Ground truth of satellite image example ](projectRoadSegmentation/report/pics/satImage_gt.png) Fig2. Ground truth of satellite image example 
+ ![Fig2. Ground truth of satellite image example ](projectRoadSegmentation/report/pics/satImage_gt.png) 
+ Fig2. Ground truth of satellite image example 
  
  The problem that arises with such a small training set
 (100 images only) is overfitting. Moreover in order to train
