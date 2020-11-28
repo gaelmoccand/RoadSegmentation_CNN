@@ -198,9 +198,11 @@ carefully.
 deep convolutional encoder-decoder architecture for image
 segmentation,” CoRR, vol. abs/1511.00561, 2015. [Online].
 Available: http://arxiv.org/abs/1511.00561
+
 [2] V. Badrinarayanan, A. Handa, and R. Cipolla, “SegNet: A
 Deep Convolutional Encoder-Decoder Architecture for Robust
 Semantic Pixel-Wise Labelling,” ArXiv e-prints, May 2015.
+
 [3] L. Araujosantos, “Learn Segmentation,” https://github.com/
 leonardoaraujosantos/LearnSegmentation, 2017.
 
